@@ -1,38 +1,30 @@
-package service
+package sender
 
 import (
 	"context"
-	"scraper/converter"
-	"scraper/dto"
+	"go.uber.org/zap"
+	"scraper/internal/services/fetcher"
 	"scraper/pkg/telemetry"
-	"scraper/storage/model"
 	"sync"
-
-	"github.com/sirupsen/logrus"
 )
 
-type FilmStorageRepository interface {
-	IsExists(film model.Film) bool
-	Insert(film model.Film) (model.Film, error)
-}
-
 type MovieFetcher interface {
-	GetMovies() ([]dto.RawFilmData, error)
+	GetMovies() (fetcher.CineplexMoviesResponse, error)
 }
 
 type Scraper struct {
-	r FilmStorageRepository
 	s MovieFetcher
-	l logrus.FieldLogger
+	l zap.Logger
 }
 
-func NewScraper(repo FilmStorageRepository, sp MovieFetcher, log logrus.FieldLogger) *Scraper {
+func NewScraper(mv MovieFetcher, l zap.Logger) *Scraper {
 	return &Scraper{
-		r: repo,
-		s: sp,
-		l: log,
+		s: mv,
+		l: l,
 	}
 }
+
+func (c *Scraper) Publish(ctx context.Context) (context.Context, <-chan dto.FilmResponse) {}
 
 func (c *Scraper) GetFilms(ctx context.Context) (context.Context, <-chan dto.FilmResponse) {
 	response := make(chan dto.FilmResponse)

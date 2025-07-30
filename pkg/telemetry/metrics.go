@@ -27,7 +27,6 @@ func Start(logger logrus.FieldLogger) {
 			logger.Println(fmt.Errorf("unable to start metrics %v", err))
 		}
 	}()
-
 }
 
 var ScraperHeartbeat = prometheus.NewCounter(
