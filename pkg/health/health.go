@@ -1,25 +1,80 @@
+// Package health provides HTTP endpoints for Kubernetes liveness (/livez) and readiness (/readyz) probes.
+//
+// The /livez endpoint reports whether the application is running and should only fail in cases where a container restart is required.
+// The /readyz endpoint reports whether the application is ready to serve traffic, executing optional health checks for dependencies
+// such as databases or other persistent services.
+//
+// Expose these endpoints on a typical health-check port (e.g., 8080). These handlers are intended for internal use,
+// enabling Kubernetes and other systems to determine pod state and manage rollout and recovery as needed.
 package health
 
-/*
-Key Differences Between Livez and Readyz
-Liveness (/livez):
-    Determines if the application is running without deadlocks or critical failures
-    Failure triggers container restart in Kubernetes
-    Should only fail if the application needs to be restarted
-Readiness (/readyz):
-    Determines if the application is ready to serve requests
-    Failure removes the pod from load balancer rotation
-    Can fail temporarily during startup, configuration updates, or dependency issues
+import (
+	"context"
+	"net/http"
+	"time"
+)
 
-What I’ve described in this section is a polling approach, but I’d like to point out
-that control loops that broadcast heartbeats are another way of implementing this pat-
-tern. Using this technique, components are continually broadcasting their lifecycle
-state with one control loop, and entities that have an interest in this app’s status will be
-listening for these events and responding appropriately. I’ll remind you of the discus-
-sion of chapter 4: what I’m describing here is an event-driven pattern. As the archi-
-tect/developer, you must understand the architectural patterns of the software as a
-whole and design/implement appropriately. The key with either approach is that con-
-trol loops provide the redundancy that compensates for the uncertainty inherent in
-distributed systems.
+const (
+	livePath  = "/livez"
+	readyPath = "/readyz"
+)
 
-*/
+var (
+	ready = false
+)
+
+// Healthz determines if the application is running without deadlocks or critical failures.
+// Failure triggers container restart in Kubernetes,
+// should only fail if the application needs to be restarted.
+func Healthz(mux *http.ServeMux) {
+	mux.HandleFunc(livePath, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		println("livez checking...")
+	})
+}
+
+// Readyz determines if the application is ready to serve requests.
+// Failure removes the pod from load balancer rotation,
+// can fail temporarily during startup, configuration updates, or dependency issues
+func Readyz(ctx context.Context, mux *http.ServeMux, timeout time.Duration, checks ...func(ctx context.Context) error) {
+	go readyCheck(ctx, timeout, checks...)
+
+	mux.HandleFunc(readyPath, func(w http.ResponseWriter, r *http.Request) {
+		if ready {
+			w.WriteHeader(http.StatusOK)
+
+			return
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+}
+
+func readyCheck(ctx context.Context, timeout time.Duration, checks ...func(ctx context.Context) error) {
+	for {
+		select {
+		case <-ctx.Done():
+			println("has received done")
+			return
+		default:
+			println("readyz checking...")
+			for _, check := range checks {
+				func() {
+					ctx, cancel := context.WithTimeout(context.Background(), timeout)
+					defer cancel()
+					err := check(ctx)
+					if err != nil {
+
+						ready = false
+
+						return
+					}
+				}()
+			}
+
+			ready = true
+			time.Sleep(15 * time.Second)
+		}
+	}
+
+}
