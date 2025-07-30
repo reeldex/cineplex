@@ -19,9 +19,7 @@ const (
 	readyPath = "/readyz"
 )
 
-var (
-	ready = false
-)
+var ready = false
 
 // Healthz determines if the application is running without deadlocks or critical failures.
 // Failure triggers container restart in Kubernetes,
@@ -29,7 +27,6 @@ var (
 func Healthz(mux *http.ServeMux) {
 	mux.HandleFunc(livePath, func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		println("livez checking...")
 	})
 }
 
@@ -57,10 +54,9 @@ func readyCheck(ctx context.Context, timeout time.Duration, checks ...func(ctx c
 			println("has received done")
 			return
 		default:
-			println("readyz checking...")
 			for _, check := range checks {
 				func() {
-					ctx, cancel := context.WithTimeout(context.Background(), timeout)
+					ctx, cancel := context.WithTimeout(ctx, timeout)
 					defer cancel()
 					err := check(ctx)
 					if err != nil {
@@ -76,5 +72,4 @@ func readyCheck(ctx context.Context, timeout time.Duration, checks ...func(ctx c
 			time.Sleep(15 * time.Second)
 		}
 	}
-
 }

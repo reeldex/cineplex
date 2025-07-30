@@ -1,10 +1,11 @@
 package fetcher
 
-type MoviesResponse struct {
-	Movies []Movie `json:"movies"`
+type CineplexMoviesResponse struct {
+	Movies []CineplexMovie `json:"movies"`
 }
 
-type Movie struct {
+// CineplexMovie api representation.
+type CineplexMovie struct {
 	IDMovie             string       `json:"id_movie"`
 	IDCinema            string       `json:"id_cinema"`
 	Title               string       `json:"title"`

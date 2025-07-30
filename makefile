@@ -13,6 +13,7 @@ install-tools:
 	go install mvdan.cc/gofumpt@v0.8.0
 	go install github.com/daixiang0/gci@v0.13.6
 	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.2.2
+	go install github.com/air-verse/air@latest
 
 fmt:
 	@gofumpt -w -extra .

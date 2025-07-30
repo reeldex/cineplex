@@ -15,7 +15,7 @@ type FilterRequest struct {
 	ByStatus      string `json:"by_status"`
 }
 
-func get(cl *http.Client) (MoviesResponse, error) {
+func get(cl *http.Client) (CineplexMoviesResponse, error) {
 	// Create request payload
 	filter := FilterRequest{
 		ByFormat:      "",
@@ -51,7 +51,7 @@ func get(cl *http.Client) (MoviesResponse, error) {
 		panic(err)
 	}
 
-	response := MoviesResponse{}
+	response := CineplexMoviesResponse{}
 
 	return response, json.Unmarshal(respBody, &response)
 }

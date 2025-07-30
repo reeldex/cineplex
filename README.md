@@ -1,5 +1,9 @@
-# tpl
-template
+###  cineplex
+
+A lightweight, cloud-native internal service designed to broadcast updates about currently running films in cineplex.md. 
+Leveraging a pub/sub model, it ensures timely notifications are delivered to all subscribed services within reeldex ecosystem.
+
+#### project structure is layered
 
 ```
 project
@@ -24,3 +28,8 @@ project
 
 Taken from:
 https://medium.com/@smart_byte_labs/organize-like-a-pro-a-simple-guide-to-go-project-folder-structures-e85e9c1769c2
+
+
+#### Tools used:
+- air https://github.com/air-verse/air
+- direnv https://github.com/direnv/direnv/blob/master/docs/installation.md
