@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cineplex
+  labels:
+    app: cineplex
+spec:
+  replicas: 1                    # How many copies of your app to run (we'll override this later)
+  selector:
+    matchLabels:
+      app: cineplex               # How Kubernetes identifies which pods belong to this deployment
+  template:
+    metadata:
+      labels:
+        app: cineplex             # Labels applied to each pod
+    spec:
+      containers:
+        - name: cineplex
+          image: slash3b/cineplex:latest
+          ports:
+            - containerPort: 8080   # The port your Go app listens on inside the container
+          resources:              # Resource limits to prevent your app from using too much CPU/memory
+            limits:
+              memory: "256Mi"     # Maximum 256MB of RAM
+              cpu: "250m"         # Maximum 0.25 CPU cores (250 millicores)
+            requests:
+              memory: "128Mi"     # Guaranteed 128MB of RAM
+              cpu: "125m"         # Guaranteed 0.125 CPU cores
