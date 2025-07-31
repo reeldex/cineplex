@@ -12,6 +12,10 @@ linters:
     - ireturn
     - wrapcheck
     - varnamelen
+    - depguard
+    - revive
+    - funlen
+    - exhaustruct
   settings:
     lll:
       line-length: 160

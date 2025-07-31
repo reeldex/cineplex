@@ -1,3 +1,4 @@
+//nolint:tagliatelle
 package fetcher
 
 type CineplexMoviesResponse struct {

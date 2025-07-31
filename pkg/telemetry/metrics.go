@@ -1,14 +1,6 @@
 package telemetry
 
-import (
-	"fmt"
-	"net/http"
-
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/sirupsen/logrus"
-)
-
+/*
 func Start(logger logrus.FieldLogger) {
 	prometheus.MustRegister(
 		ScraperHeartbeat,
@@ -21,10 +13,11 @@ func Start(logger logrus.FieldLogger) {
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
 		logger.Println("metrics available on :2112/metrics")
+
 		err := http.ListenAndServe(":2112", nil)
 		if err != nil {
 			ScraperErrors.WithLabelValues("unable_to_start_metrics").Inc()
-			logger.Println(fmt.Errorf("unable to start metrics %v", err))
+			logger.Println(fmt.Errorf("unable to start metrics %w", err))
 		}
 	}()
 }
@@ -58,3 +51,6 @@ var ScraperCacheEvent = prometheus.NewGaugeVec(
 		Name: "scraper_cache_events",
 		Help: "Scraper events",
 	}, []string{"event"})
+
+
+*/
