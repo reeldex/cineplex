@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-service-config
+data:
+  LOG_LEVEL: "info"
+  # Add other config keys/values as needed

@@ -7,17 +7,17 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"scraper/internal/services/fetcher"
-	http2 "scraper/pkg/http"
 	"sync"
 	"syscall"
 	"time"
 
 	"go.uber.org/zap"
 	config "scraper/configs"
+	"scraper/internal/services/fetcher"
 	"scraper/internal/services/sender"
 	"scraper/pkg/env"
 	"scraper/pkg/health"
+	http2 "scraper/pkg/http"
 	"scraper/pkg/logger"
 )
 
