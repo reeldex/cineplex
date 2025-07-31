@@ -2,7 +2,6 @@ package sender
 
 import (
 	"context"
-	"fmt"
 
 	"go.uber.org/zap"
 	"scraper/internal/services/fetcher"
@@ -31,7 +30,7 @@ func (s *S) Broadcast(ctx context.Context) error {
 	}
 
 	for _, mv := range mvs.Movies {
-		fmt.Println(mv.OriginalTitle)
+		s.l.Info(mv.Title)
 	}
 
 	s.l.Info("fetched movies", zap.Int("count", len(mvs.Movies)))

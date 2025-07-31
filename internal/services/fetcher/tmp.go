@@ -1,7 +1,9 @@
+//nolint:tagliatelle
 package fetcher
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -15,7 +17,7 @@ type FilterRequest struct {
 	ByStatus      string `json:"by_status"`
 }
 
-func get(cl *http.Client) (CineplexMoviesResponse, error) {
+func get(ctx context.Context, cl *http.Client) (CineplexMoviesResponse, error) {
 	// Create request payload
 	filter := FilterRequest{
 		ByFormat:      "",
@@ -31,27 +33,27 @@ func get(cl *http.Client) (CineplexMoviesResponse, error) {
 	}
 
 	// Create request
-	req, err := http.NewRequest(http.MethodPost, "https://cineplex.md/api/getMoviesFiltered", bytes.NewBuffer(jsonData))
-	if err != nil {
-		panic(err)
-	}
-
-	// Set headers (same as above)
-	// ... (headers remain the same)
-
-	// Execute request
-	resp, err := cl.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://cineplex.md/api/getMoviesFiltered", bytes.NewBuffer(jsonData))
 	if err != nil {
 		panic(err)
 	}
 
 	response := CineplexMoviesResponse{}
+
+	// Execute request
+	resp, err := cl.Do(req)
+	if err != nil {
+		return response, err
+	}
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return response, err
+	}
 
 	return response, json.Unmarshal(respBody, &response)
 }

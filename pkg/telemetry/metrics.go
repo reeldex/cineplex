@@ -1,14 +1,6 @@
 package telemetry
 
-import (
-	"fmt"
-	"net/http"
-
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/sirupsen/logrus"
-)
-
+/*
 func Start(logger logrus.FieldLogger) {
 	prometheus.MustRegister(
 		ScraperHeartbeat,
@@ -59,3 +51,6 @@ var ScraperCacheEvent = prometheus.NewGaugeVec(
 		Name: "scraper_cache_events",
 		Help: "Scraper events",
 	}, []string{"event"})
+
+
+*/

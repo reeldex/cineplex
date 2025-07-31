@@ -28,8 +28,9 @@ func main() {
 		timeout = env.Get("TIMEOUT", "10s")
 		mux     = http.NewServeMux()
 		server  = http.Server{
-			Addr:    ":" + port,
-			Handler: mux,
+			Addr:              ":" + port,
+			Handler:           mux,
+			ReadHeaderTimeout: 10 * time.Second,
 		}
 	)
 
@@ -43,8 +44,9 @@ func main() {
 	health.Healthz(mux)
 	health.Readyz(ctx, mux, time.Second*15)
 
+	wg.Add(2)
+
 	go func() {
-		wg.Add(1)
 		defer wg.Done()
 
 		lg.Info("starting http server...", zap.String("http_port", port))
@@ -58,7 +60,6 @@ func main() {
 	}()
 
 	go func() {
-		wg.Add(1)
 		defer wg.Done()
 
 		<-ctx.Done()
@@ -77,7 +78,12 @@ func main() {
 		cancel()
 	}
 
-	dec := fetcher.NewSoupDecorator(client)
+	dec, err := fetcher.NewSoupDecorator(client)
+	if err != nil {
+		lg.Error("soup decorator error", zap.Error(err))
+		cancel()
+	}
+
 	senderservice := sender.New(dec, lg)
 
 	ticker := time.NewTicker(time.Minute * 60)
@@ -108,7 +114,6 @@ func main() {
 
 				return
 			case <-ticker.C:
-				// fixme: pipe here
 				err = senderservice.Broadcast(ctx)
 				if err != nil {
 					lg.Error("broadcast error", zap.Error(err))

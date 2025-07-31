@@ -51,8 +51,6 @@ func readyCheck(ctx context.Context, timeout time.Duration, checks ...func(ctx c
 	for {
 		select {
 		case <-ctx.Done():
-			println("has received done")
-
 			return
 		default:
 			for _, check := range checks {
