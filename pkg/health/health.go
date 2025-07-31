@@ -32,7 +32,7 @@ func Healthz(mux *http.ServeMux) {
 
 // Readyz determines if the application is ready to serve requests.
 // Failure removes the pod from load balancer rotation,
-// can fail temporarily during startup, configuration updates, or dependency issues
+// can fail temporarily during startup, configuration updates, or dependency issues.
 func Readyz(ctx context.Context, mux *http.ServeMux, timeout time.Duration, checks ...func(ctx context.Context) error) {
 	go readyCheck(ctx, timeout, checks...)
 
@@ -52,15 +52,16 @@ func readyCheck(ctx context.Context, timeout time.Duration, checks ...func(ctx c
 		select {
 		case <-ctx.Done():
 			println("has received done")
+
 			return
 		default:
 			for _, check := range checks {
 				func() {
 					ctx, cancel := context.WithTimeout(ctx, timeout)
 					defer cancel()
+
 					err := check(ctx)
 					if err != nil {
-
 						ready = false
 
 						return
@@ -69,6 +70,7 @@ func readyCheck(ctx context.Context, timeout time.Duration, checks ...func(ctx c
 			}
 
 			ready = true
+
 			time.Sleep(15 * time.Second)
 		}
 	}

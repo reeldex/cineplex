@@ -21,10 +21,11 @@ func Start(logger logrus.FieldLogger) {
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
 		logger.Println("metrics available on :2112/metrics")
+
 		err := http.ListenAndServe(":2112", nil)
 		if err != nil {
 			ScraperErrors.WithLabelValues("unable_to_start_metrics").Inc()
-			logger.Println(fmt.Errorf("unable to start metrics %v", err))
+			logger.Println(fmt.Errorf("unable to start metrics %w", err))
 		}
 	}()
 }

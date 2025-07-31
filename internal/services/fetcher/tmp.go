@@ -31,7 +31,7 @@ func get(cl *http.Client) (CineplexMoviesResponse, error) {
 	}
 
 	// Create request
-	req, err := http.NewRequest("POST", "https://cineplex.md/api/getMoviesFiltered", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPost, "https://cineplex.md/api/getMoviesFiltered", bytes.NewBuffer(jsonData))
 	if err != nil {
 		panic(err)
 	}

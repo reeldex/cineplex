@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -29,7 +28,7 @@ func main() {
 		timeout = env.Get("TIMEOUT", "10s")
 		mux     = http.NewServeMux()
 		server  = http.Server{
-			Addr:    fmt.Sprintf(":%s", port),
+			Addr:    ":" + port,
 			Handler: mux,
 		}
 	)
@@ -47,6 +46,7 @@ func main() {
 	go func() {
 		wg.Add(1)
 		defer wg.Done()
+
 		lg.Info("starting http server...", zap.String("http_port", port))
 
 		err := server.ListenAndServe()
@@ -64,6 +64,7 @@ func main() {
 		<-ctx.Done()
 
 		lg.Debug("calling http server shutdown...")
+
 		err := server.Shutdown(ctx)
 		if err != nil {
 			lg.Error("unexpected http server error", zap.Error(err))
@@ -80,6 +81,7 @@ func main() {
 	senderservice := sender.New(dec, lg)
 
 	ticker := time.NewTicker(time.Minute * 60)
+
 	go func() {
 		<-ctx.Done()
 
@@ -120,5 +122,6 @@ func main() {
 	wg.Wait()
 
 	lg.Info("application has finished its work")
+
 	_ = logSync()
 }
