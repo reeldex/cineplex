@@ -126,7 +126,7 @@ func main() {
 
 	wg.Wait()
 
-	lg.Info("application has finished its work")
+	lg.Info("application has been gracefully shutdown")
 
 	_ = logSync()
 }

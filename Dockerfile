@@ -1,28 +1,27 @@
 # syntax=docker/dockerfile:1.2
-FROM golang:1.18-alpine as builder_img_
+FROM golang:1.24-alpine AS builder
 
-COPY services/common /go/src/common
-COPY services/scraper/ /go/src/scraper
+WORKDIR /go/src/app
 
-WORKDIR /go/src/scraper
-
-RUN apk add --no-cache --update gcc g++
-
-
+# Copy go.mod and go.sum first for caching dependencies
+COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg \
-      go mod download
+    go mod tidy
 
+# Copy the rest of your source code (including cmd/app)
 COPY . .
 
+# Build your app, specifying the main package location
 RUN --mount=type=cache,target=/go/pkg \
-    CGO_ENABLED=1 go build -v -o /go/bin/scraper .
+    CGO_ENABLED=0 go build -v -o /go/bin/cineplex ./cmd/app
 
+# Prepare final minimal image
 FROM alpine:latest
 
 WORKDIR /app
 
-RUN apk add --no-cache --update tzdata
+RUN apk add --no-cache tzdata
 
-COPY --from=builder_img_ /go/bin /app
+COPY --from=builder /go/bin/cineplex /app/
 
-ENTRYPOINT /app/scraper
+ENTRYPOINT ["/app/cineplex"]
