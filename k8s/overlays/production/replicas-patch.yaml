@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: cineplex                 # Must match the name in base/deployment.yaml
 spec:
-  replicas: 2                  # This overrides the "replicas: 1" from the base
+  replicas: 1                  # This overrides the "replicas: 1" from the base
   selector:
     matchLabels:
       app: cineplex               # How Kubernetes identifies which pods belong to this deployment

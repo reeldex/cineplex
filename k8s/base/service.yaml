@@ -1,14 +1,33 @@
+# ============================================================================
+# KUBERNETES SERVICE CONFIGURATION
+# ============================================================================
+# A Service provides stable networking and load balancing for your application
+# pods. It acts as a permanent address that other applications can use to
+# reach your app, even when individual pods restart or change IP addresses.
+# ============================================================================
 apiVersion: v1
 kind: Service
 metadata:
   name: cineplex
   labels:
     app: cineplex
+# ============================================================================
+# SERVICE SPECIFICATION
+# ============================================================================
 spec:
-  type: ClusterIP              # Only accessible within the cluster (not from internet)
-  ports:
-    - port: 8080                 # Port the service listens on
-      targetPort: 8080           # Port on your container (should match containerPort above)
-      protocol: TCP
+  # --------------------------------------------------------------------------
+  # SERVICE TYPE
+  # --------------------------------------------------------------------------
+  # ClusterIP = Only accessible within the cluster
+  # NodePort = Accessible from outside on node IPs
+  # LoadBalancer = Creates external load balancer
+  # ExternalName = Maps to external DNS name
+  type: ClusterIP
+  # --------------------------------------------------------------------------
+  # POD SELECTION (MOST IMPORTANT PART!)
+  # --------------------------------------------------------------------------
+  # Service will route traffic to pods with this label
+  # Your Deployment MUST create pods with matching labels!
+  # Multiple labels can be specified for more precise selection
   selector:
-    app: cineplex                # Directs traffic to pods with this label
+      app: cineplex

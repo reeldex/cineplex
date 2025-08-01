@@ -1,28 +1,94 @@
-apiVersion: apps/v1
-kind: Deployment
+# ============================================================================
+# KUBERNETES DEPLOYMENT CONFIGURATION EXPLAINED
+# ============================================================================
+# A Deployment is like a "recipe" that tells Kubernetes HOW to run your
+# application. It manages the lifecycle of your pods (containers), handles
+# scaling, rolling updates, and ensures your desired number of replicas
+# are always running.
+# ============================================================================
+
+# API version and resource type declaration
+apiVersion: apps/v1               # Uses the apps/v1 API group for Deployments
+kind: Deployment                  # Declares this as a Deployment resource
+# (not Service, Pod, ConfigMap, etc.)
+
+# ============================================================================
+# METADATA SECTION
+# ============================================================================
+# Contains identifying information about this Deployment
 metadata:
-  name: cineplex
-  labels:
-    app: cineplex
+  name: cineplex                  # The name of this Deployment in Kubernetes
+  # Used by kubectl commands: kubectl get deployment cineplex
+
+  labels:                         # Labels attached to the Deployment itself
+    app: cineplex                 # Helps organize and filter Deployments
+    # These labels are on the Deployment, not the pods!
+
+# ============================================================================
+# DEPLOYMENT SPECIFICATION
+# ============================================================================
 spec:
-  replicas: 1                    # How many copies of your app to run (we'll override this later)
-  selector:
-    matchLabels:
-      app: cineplex               # How Kubernetes identifies which pods belong to this deployment
-  template:
+  # --------------------------------------------------------------------------
+  # REPLICA MANAGEMENT
+  # --------------------------------------------------------------------------
+  replicas: 1                     # HOW MANY identical copies of your app to run
+    # Kubernetes will ensure exactly this many pods exist
+    # If a pod crashes, K8s creates a new one
+    # If you change this to 3, K8s will create 2 more pods
+  # Your Kustomize overlay will change this to 2
+
+  # --------------------------------------------------------------------------
+  # POD SELECTOR (CRITICAL!)
+  # --------------------------------------------------------------------------
+  selector:                       # How the Deployment identifies "its" pods
+    matchLabels:                  # Pods must have ALL these labels to belong here
+      app: cineplex               # The Deployment manages pods with this label
+      # MUST MATCH the labels in template.metadata.labels below!
+
+  # --------------------------------------------------------------------------
+  # POD TEMPLATE (THE BLUEPRINT)
+  # --------------------------------------------------------------------------
+  template:                       # This is the "blueprint" for creating pods
+    # Every pod created by this Deployment uses this template
+
+    # Pod metadata
     metadata:
-      labels:
-        app: cineplex             # Labels applied to each pod
+      labels:                     # Labels applied to EACH POD created
+        app: cineplex             # CRITICAL: Must match selector.matchLabels above!
+        # Also used by Services to find these pods
+
+    # Pod specification
     spec:
-      containers:
-        - name: cineplex
-          image: slash3b/cineplex:latest
-          ports:
-            - containerPort: 8080   # The port your Go app listens on inside the container
-          resources:              # Resource limits to prevent your app from using too much CPU/memory
+      # ------------------------------------------------------------------------
+      # CONTAINER DEFINITION
+      # ------------------------------------------------------------------------
+      containers:                 # List of containers in each pod (usually just 1)
+        - name: cineplex          # Name of the container (for identification)
+
+          # Docker image configuration
+          image: slash3b/cineplex:latest  # Your Docker image from Docker Hub
+            # Format: [registry/]username/image:tag
+          # "latest" = most recent version
+
+          # ------------------------------------------------------------------------
+          # RESOURCE MANAGEMENT (VERY IMPORTANT!)
+          # ------------------------------------------------------------------------
+          resources:              # Controls CPU and memory usage
+
+            # Maximum resources this container can use
             limits:
-              memory: "256Mi"     # Maximum 256MB of RAM
-              cpu: "250m"         # Maximum 0.25 CPU cores (250 millicores)
+              memory: "256Mi"     # Maximum 256 Megabytes of RAM
+                # "Mi" = Mebibytes (1024-based)
+              # If app tries to use more, it gets killed (OOMKilled)
+
+              cpu: "250m"         # Maximum 0.25 CPU cores
+                # "m" = millicores (1000m = 1 full CPU core)
+              # Prevents app from using too much CPU
+
+            # Guaranteed resources for this container
             requests:
-              memory: "128Mi"     # Guaranteed 128MB of RAM
-              cpu: "125m"         # Guaranteed 0.125 CPU cores
+              memory: "128Mi"     # Kubernetes GUARANTEES this much RAM
+              # Node must have this available to schedule pod
+
+              cpu: "125m"         # Kubernetes GUARANTEES 0.125 CPU cores
+              # Used for scheduling decisions

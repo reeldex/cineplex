@@ -5,6 +5,7 @@ resources:                     # List of Kubernetes manifest files to include
   - deployment.yaml
   - service.yaml
 
-commonLabels:                  # Labels applied to ALL resources
-  app: cineplex
-  version: v1.0.0
+labels:
+  - pairs:
+      app: cineplex
+      version: v1.0.0
