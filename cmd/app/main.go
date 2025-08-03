@@ -50,6 +50,8 @@ func main() {
 		defer wg.Done()
 
 		lg.Info("starting http server...", zap.String("http_port", port))
+		lg.Info("/livez path is available", zap.String("http_port", port))
+		lg.Info("/readyz path is available", zap.String("http_port", port))
 
 		err := server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
