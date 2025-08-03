@@ -11,9 +11,6 @@ metadata:
   name: cineplex
   labels:
     app: cineplex
-# ============================================================================
-# SERVICE SPECIFICATION
-# ============================================================================
 spec:
   # --------------------------------------------------------------------------
   # SERVICE TYPE
@@ -30,4 +27,9 @@ spec:
   # Your Deployment MUST create pods with matching labels!
   # Multiple labels can be specified for more precise selection
   selector:
-      app: cineplex
+    app: cineplex
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+

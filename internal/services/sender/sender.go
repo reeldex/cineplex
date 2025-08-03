@@ -29,9 +29,11 @@ func (s *S) Broadcast(ctx context.Context) error {
 		s.l.Error("failed to fetch movies from cineplex.md", zap.Error(err))
 	}
 
-	for _, mv := range mvs.Movies {
-		s.l.Info(mv.Title)
-	}
+	_ = mvs.Movies
+
+	// for _, mv := range mvs.Movies {
+	// 	s.l.Info(mv.Title)
+	// }
 
 	s.l.Info("fetched movies", zap.Int("count", len(mvs.Movies)))
 
