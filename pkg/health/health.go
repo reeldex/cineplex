@@ -12,6 +12,8 @@ import (
 	"context"
 	"net/http"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 const (
@@ -21,11 +23,13 @@ const (
 
 var ready = false
 
-// Healthz determines if the application is running without deadlocks or critical failures.
+// Livez determines if the application is running without deadlocks or critical failures.
 // Failure triggers container restart in Kubernetes,
 // should only fail if the application needs to be restarted.
-func Healthz(mux *http.ServeMux) {
+func Livez(mux *http.ServeMux, lg *zap.Logger) {
 	mux.HandleFunc(livePath, func(w http.ResponseWriter, r *http.Request) {
+		lg.Info("livez is answering healthy")
+
 		w.WriteHeader(http.StatusOK)
 	})
 }
@@ -33,15 +37,19 @@ func Healthz(mux *http.ServeMux) {
 // Readyz determines if the application is ready to serve requests.
 // Failure removes the pod from load balancer rotation,
 // can fail temporarily during startup, configuration updates, or dependency issues.
-func Readyz(ctx context.Context, mux *http.ServeMux, timeout time.Duration, checks ...func(ctx context.Context) error) {
+func Readyz(ctx context.Context, mux *http.ServeMux, lg *zap.Logger, timeout time.Duration, checks ...func(ctx context.Context) error) {
 	go readyCheck(ctx, timeout, checks...)
 
 	mux.HandleFunc(readyPath, func(w http.ResponseWriter, r *http.Request) {
 		if ready {
+			lg.Info("readyz is answering healthy")
+
 			w.WriteHeader(http.StatusOK)
 
 			return
 		}
+
+		lg.Info("readyz is not doing well")
 
 		w.WriteHeader(http.StatusInternalServerError)
 	})

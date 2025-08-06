@@ -1,6 +1,14 @@
 //nolint:tagliatelle
 package fetcher
 
+type FilterRequest struct {
+	ByFormat      string `json:"by_format"`
+	ByQuality     string `json:"by_quality"`
+	ByAudioFormat string `json:"by_audio_format"`
+	ByCinema      string `json:"by_cinema"`
+	ByStatus      string `json:"by_status"`
+}
+
 type CineplexMoviesResponse struct {
 	Movies []CineplexMovie `json:"movies"`
 }

@@ -1,6 +1,6 @@
 module scraper
 
-go 1.24
+go 1.24.5
 
 require (
 	github.com/google/uuid v1.6.0
@@ -27,6 +27,7 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.65.0 // indirect
 	github.com/prometheus/procfs v0.17.0 // indirect
+	github.com/slash3b/cache v0.0.0-20250806193145-cf82f28ea819 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/net v0.42.0 // indirect

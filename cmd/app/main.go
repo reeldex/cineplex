@@ -41,8 +41,8 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
-	health.Healthz(mux)
-	health.Readyz(ctx, mux, time.Second*15)
+	health.Livez(mux, lg)
+	health.Readyz(ctx, mux, lg, time.Second*15)
 
 	wg.Add(2)
 
