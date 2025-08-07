@@ -10,14 +10,14 @@ import (
 	"syscall"
 	"time"
 
+	config "cineplex/configs"
+	"cineplex/internal/services/fetcher"
+	"cineplex/internal/services/sender"
+	"cineplex/pkg/env"
+	"cineplex/pkg/health"
+	http2 "cineplex/pkg/http"
+	"cineplex/pkg/logger"
 	"go.uber.org/zap"
-	config "scraper/configs"
-	"scraper/internal/services/fetcher"
-	"scraper/internal/services/sender"
-	"scraper/pkg/env"
-	"scraper/pkg/health"
-	http2 "scraper/pkg/http"
-	"scraper/pkg/logger"
 )
 
 func main() {
@@ -41,8 +41,8 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
-	health.Healthz(mux)
-	health.Readyz(ctx, mux, time.Second*15)
+	health.Livez(mux, lg)
+	health.Readyz(ctx, mux, lg, time.Second*15)
 
 	wg.Add(2)
 
@@ -80,11 +80,7 @@ func main() {
 		cancel()
 	}
 
-	dec, err := fetcher.NewSoupDecorator(client)
-	if err != nil {
-		lg.Error("soup decorator error", zap.Error(err))
-		cancel()
-	}
+	dec := fetcher.NewCineplex(client, lg)
 
 	senderservice := sender.New(dec, lg)
 

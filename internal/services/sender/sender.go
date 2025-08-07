@@ -3,8 +3,8 @@ package sender
 import (
 	"context"
 
+	"cineplex/internal/services/fetcher"
 	"go.uber.org/zap"
-	"scraper/internal/services/fetcher"
 )
 
 type MovieFetcher interface {
