@@ -3,7 +3,7 @@
 all: fmt test
 
 test:
-	go test -v -race -shuffle=on -timeout=1m -count=1
+	go test -v -race -shuffle=on -timeout=1m -count=1 ./...
 
 test-coverage:
 	@go test -race -failfast -shuffle=on -timeout=1m -count=1 -cover -coverprofile=out.html
