@@ -61,6 +61,7 @@ func (s *CineplexApi) GetMovies(ctx context.Context) (CineplexMoviesResponse, er
 
 				return response, ctx.Err()
 			default:
+				//nolint:gosec
 				sleepTime := time.Duration(100<<r+rand.Intn(200)) * time.Millisecond
 
 				s.lg.Warn("failed to fetch movies",
