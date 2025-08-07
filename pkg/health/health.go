@@ -28,8 +28,6 @@ var ready = false
 // should only fail if the application needs to be restarted.
 func Livez(mux *http.ServeMux, lg *zap.Logger) {
 	mux.HandleFunc(livePath, func(w http.ResponseWriter, r *http.Request) {
-		lg.Info("livez is answering healthy")
-
 		w.WriteHeader(http.StatusOK)
 	})
 }
@@ -42,8 +40,6 @@ func Readyz(ctx context.Context, mux *http.ServeMux, lg *zap.Logger, timeout tim
 
 	mux.HandleFunc(readyPath, func(w http.ResponseWriter, r *http.Request) {
 		if ready {
-			lg.Info("readyz is answering healthy")
-
 			w.WriteHeader(http.StatusOK)
 
 			return
