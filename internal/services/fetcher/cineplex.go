@@ -24,8 +24,8 @@ type CineplexApi struct {
 func NewCineplex(c *http.Client, lg *zap.Logger) *CineplexApi {
 	return &CineplexApi{
 		client: c,
-		cache: cache.NewLRU[string, CineplexMoviesResponse](10),
-		lg: lg,
+		cache:  cache.NewLRU[string, CineplexMoviesResponse](10),
+		lg:     lg,
 	}
 }
 
