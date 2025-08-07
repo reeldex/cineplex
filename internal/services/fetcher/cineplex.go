@@ -17,12 +17,16 @@ const retryCount = 8
 
 type CineplexApi struct {
 	client *http.Client
-	cache  cache.LRU[string, CineplexMoviesResponse]
+	cache  *cache.LRU[string, CineplexMoviesResponse]
 	lg     *zap.Logger
 }
 
 func NewCineplex(c *http.Client, lg *zap.Logger) *CineplexApi {
-	return &CineplexApi{client: c}
+	return &CineplexApi{
+		client: c,
+		cache: cache.NewLRU[string, CineplexMoviesResponse](10),
+		lg: lg,
+	}
 }
 
 func (s *CineplexApi) GetMovies(ctx context.Context) (CineplexMoviesResponse, error) {
