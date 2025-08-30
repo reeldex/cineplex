@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cineplex/pkg/health"
 	"context"
 	"errors"
 	"net/http"
@@ -14,9 +15,10 @@ import (
 	"cineplex/internal/services/fetcher"
 	"cineplex/internal/services/sender"
 	"cineplex/pkg/env"
-	"cineplex/pkg/health"
 	http2 "cineplex/pkg/http"
 	"cineplex/pkg/logger"
+	"cineplex/pkg/otel"
+
 	"go.uber.org/zap"
 )
 
@@ -34,8 +36,6 @@ func main() {
 		}
 	)
 
-	_ = timeout
-
 	lg, logSync := logger.MustNew(config.ServiceName, isDebug)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
@@ -43,6 +43,26 @@ func main() {
 
 	health.Livez(mux, lg)
 	health.Readyz(ctx, mux, lg, time.Second*15)
+
+	_ = timeout
+
+	// Set up OpenTelemetry.
+	otelShutdown, err := otel.SetupOTelSDK(ctx)
+	if err != nil {
+		lg.Error("unable to setup OTEL ", zap.Error(err))
+		cancel()
+	}
+
+	lg.Info("otel sdk is setup successfully...")
+
+	// Handle shutdown properly so nothing leaks.
+	defer func() {
+		err = otelShutdown(context.Background())
+		if err != nil {
+			lg.Error("unable to setup OTEL ", zap.Error(err))
+			cancel()
+		}
+	}()
 
 	wg.Add(2)
 

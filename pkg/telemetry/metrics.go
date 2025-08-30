@@ -1,56 +1,47 @@
 package telemetry
 
-/*
-func Start(logger logrus.FieldLogger) {
-	prometheus.MustRegister(
-		ScraperHeartbeat,
-		ScraperLatency,
-		ScraperErrors,
-		ScraperCache,
-		ScraperCacheEvent,
+import (
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
+)
+
+const name = "cineplex"
+
+var (
+	// tracer = otel.Tracer(name)
+	meter = otel.Meter(name)
+
+	CineplexCallMetricCounter = must(
+		meter.Int64Counter("cineplex.call_to_fetch_movies",
+			metric.WithDescription("The number of calls to cineplex.md"),
+			metric.WithUnit("{call}")),
 	)
+)
 
-	go func() {
-		http.Handle("/metrics", promhttp.Handler())
-		logger.Println("metrics available on :2112/metrics")
+func must(m metric.Int64Counter, err error) metric.Int64Counter {
+	if err != nil {
+		panic(err)
+	}
 
-		err := http.ListenAndServe(":2112", nil)
-		if err != nil {
-			ScraperErrors.WithLabelValues("unable_to_start_metrics").Inc()
-			logger.Println(fmt.Errorf("unable to start metrics %w", err))
-		}
-	}()
+	return m
 }
 
-var ScraperHeartbeat = prometheus.NewCounter(
-	prometheus.CounterOpts{
-		Name: "scraper_heartbeat",
-		Help: "Scraper heartbeat",
-	})
+// https://opentelemetry.io/docs/languages/go/getting-started
 
-var ScraperLatency = prometheus.NewHistogram(
-	prometheus.HistogramOpts{
-		Name: "scraper_latency",
-		Help: "Scraper latency",
-	})
+//func rolldice(w http.ResponseWriter, r *http.Request) {
+//	ctx, span := tracer.Start(r.Context(), "roll")
+//	defer span.End()
+//
+//	roll := 1 + rand.Intn(6)
+//
+//	rollValueAttr := attribute.Int("roll.value", roll)
+//	span.SetAttributes(rollValueAttr)
 
-var ScraperErrors = prometheus.NewCounterVec(
-	prometheus.CounterOpts{
-		Name: "scraper_errors",
-		Help: "Scraper Errors",
-	}, []string{"err_type"})
-
-var ScraperCache = prometheus.NewGauge(
-	prometheus.GaugeOpts{
-		Name: "scraper_cache",
-		Help: "Scraper cache hit and miss gauge",
-	})
-
-var ScraperCacheEvent = prometheus.NewGaugeVec(
-	prometheus.GaugeOpts{
-		Name: "scraper_cache_events",
-		Help: "Scraper events",
-	}, []string{"event"})
-
-
-*/
+//	rollValueAttr := attribute.Int("roll.value", roll)
+//	rollCnt.Add(ctx, 1, metric.WithAttributes(rollValueAttr))
+//
+//	resp := strconv.Itoa(roll) + "\n"
+//	if _, err := io.WriteString(w, resp); err != nil {
+//		log.Printf("Write failed: %v\n", err)
+//	}
+//}

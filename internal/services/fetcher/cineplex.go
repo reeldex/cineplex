@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"time"
 
+	"cineplex/pkg/telemetry"
+
 	"github.com/slash3b/cache"
 	"go.uber.org/zap"
 )
@@ -30,6 +32,9 @@ func NewCineplex(c *http.Client, lg *zap.Logger) *CineplexApi {
 }
 
 func (s *CineplexApi) GetMovies(ctx context.Context) (CineplexMoviesResponse, error) {
+	// rollValueAttr := attribute.Int("call.value", 1) // represents single call for now
+	telemetry.CineplexCallMetricCounter.Add(ctx, 1 /*metric.WithAttributes(rollValueAttr)*/)
+
 	filter := FilterRequest{
 		ByFormat:      "",
 		ByQuality:     "",

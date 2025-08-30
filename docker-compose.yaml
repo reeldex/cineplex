@@ -1,0 +1,18 @@
+services:
+  cineplex:
+    build:
+      context: .
+    container_name: cineplex
+    environment:
+      - TIMEOUT=15
+      - DEBUG=true
+      - PORT=8081
+      - OTEL_SERVICE_NAME=cineplex
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=cineplex,service.version=0.1.0
+#      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-metrics-demo-collector:4318
+#      - OTEL_SERVICE_NAME=otel-metrics-collector
+#  collector:
+#    container_name: otel-metrics-collector
+#    image: otel/opentelemetry-collector:latest
+#    volumes:
+#      - ./otelcol.yaml:/etc/otelcol/config.yaml
