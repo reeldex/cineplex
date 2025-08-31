@@ -8,8 +8,8 @@ import (
 const name = "cineplex"
 
 var (
-	// tracer = otel.Tracer(name).
-	meter = otel.Meter(name)
+	Tracer = otel.Tracer(name)
+	meter  = otel.Meter(name)
 
 	CineplexCallMetricCounter = must(
 		meter.Int64Counter("cineplex.call_to_fetch_movies",

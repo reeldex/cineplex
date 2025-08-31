@@ -104,7 +104,7 @@ func main() {
 
 	senderservice := sender.New(dec, lg)
 
-	ticker := time.NewTicker(time.Minute * 60)
+	ticker := time.NewTicker(time.Second * 10)
 
 	go func() {
 		<-ctx.Done()

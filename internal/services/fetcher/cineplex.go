@@ -12,6 +12,8 @@ import (
 	"cineplex/pkg/telemetry"
 
 	"github.com/slash3b/cache"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.uber.org/zap"
 )
 
@@ -32,6 +34,17 @@ func NewCineplex(c *http.Client, lg *zap.Logger) *CineplexApi {
 }
 
 func (s *CineplexApi) GetMovies(ctx context.Context) (CineplexMoviesResponse, error) {
+	// Start a span
+	tracer := telemetry.Tracer
+	ctx, span := tracer.Start(ctx, "fetch_movies")
+	defer span.End()
+
+	// Add attributes to the span
+	span.SetAttributes(
+		attribute.String("http.method", http.MethodGet),
+		attribute.String("http.url", "cineplex.md"),
+	)
+
 	// rollValueAttr := attribute.Int("call.value", 1) // represents single call for now
 	telemetry.CineplexCallMetricCounter.Add(ctx, 1 /*metric.WithAttributes(rollValueAttr)*/)
 
@@ -112,6 +125,8 @@ func (s *CineplexApi) GetMovies(ctx context.Context) (CineplexMoviesResponse, er
 	}
 
 	s.cache.Set("getMoviesFiltered", response)
+
+	span.SetStatus(codes.Ok, "Successfully fetched movies")
 
 	return response, nil
 }

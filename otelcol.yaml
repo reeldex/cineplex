@@ -24,12 +24,26 @@ exporters:
     const_labels:
       env: "docker"
 
-  debug:  # Changed from "logging" to "debug"
+  debug:
     verbosity: detailed
+
+  otlp/jaeger:  # Use OTLP instead of jaeger
+    endpoint: http://jaeger:4317
+    tls:
+      insecure: true
+#  jaeger:
+#    endpoint: jaeger:14250
+#    tls:
+#      insecure: true
 
 service:
   pipelines:
     metrics:
       receivers: [otlp]
       processors: [batch, resource]
-      exporters: [prometheus, debug]  # Updated exporter name
+      exporters: [prometheus, debug]
+
+    traces:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [debug, otlp/jaeger]
