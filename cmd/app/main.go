@@ -19,8 +19,6 @@ import (
 	"cineplex/pkg/logger"
 	"cineplex/pkg/otel"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-
 	"go.uber.org/zap"
 )
 
