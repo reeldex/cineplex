@@ -1,7 +1,6 @@
 package main
 
 import (
-	"cineplex/pkg/health"
 	"context"
 	"errors"
 	"net/http"
@@ -15,9 +14,12 @@ import (
 	"cineplex/internal/services/fetcher"
 	"cineplex/internal/services/sender"
 	"cineplex/pkg/env"
+	"cineplex/pkg/health"
 	http2 "cineplex/pkg/http"
 	"cineplex/pkg/logger"
 	"cineplex/pkg/otel"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"go.uber.org/zap"
 )

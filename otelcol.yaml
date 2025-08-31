@@ -1,0 +1,35 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318  # Listen on all interfaces
+      grpc:
+        endpoint: 0.0.0.0:4317  # Optional: also enable gRPC
+
+processors:
+  batch:  # Fixed: was "fixme"
+    timeout: 1s
+    send_batch_size: 1024
+
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: "docker"
+        action: insert
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"  # Fixed: was localhost:3000
+    namespace: "otel"
+    const_labels:
+      env: "docker"
+
+  logging:  # Optional: for debugging
+    loglevel: debug
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch, resource]  # Fixed: added actual processors
+      exporters: [prometheus, logging]  # Added logging for debugging

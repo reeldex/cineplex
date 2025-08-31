@@ -9,10 +9,30 @@ services:
       - PORT=8081
       - OTEL_SERVICE_NAME=cineplex
       - OTEL_RESOURCE_ATTRIBUTES=service.name=cineplex,service.version=0.1.0
-#      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-metrics-demo-collector:4318
-#      - OTEL_SERVICE_NAME=otel-metrics-collector
-#  collector:
-#    container_name: otel-metrics-collector
-#    image: otel/opentelemetry-collector:latest
-#    volumes:
-#      - ./otelcol.yaml:/etc/otelcol/config.yaml
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-metrics-demo-collector:4318
+    depends_on:
+      - collector
+  collector:
+    container_name: otel-metrics-collector
+    image: otel/opentelemetry-collector:latest
+    volumes:
+      - ./otelcol.yaml:/etc/otelcol/config.yaml
+    ports:
+      - "4318:4318"  # OTLP HTTP receiver
+      - "8889:8889"  # Prometheus metrics endpoint
+    depends_on:
+      - prometheus
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'

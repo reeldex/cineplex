@@ -8,7 +8,7 @@ import (
 const name = "cineplex"
 
 var (
-	// tracer = otel.Tracer(name)
+	// tracer = otel.Tracer(name).
 	meter = otel.Meter(name)
 
 	CineplexCallMetricCounter = must(
@@ -28,7 +28,7 @@ func must(m metric.Int64Counter, err error) metric.Int64Counter {
 
 // https://opentelemetry.io/docs/languages/go/getting-started
 
-//func rolldice(w http.ResponseWriter, r *http.Request) {
+// func rolldice(w http.ResponseWriter, r *http.Request) {
 //	ctx, span := tracer.Start(r.Context(), "roll")
 //	defer span.End()
 //
