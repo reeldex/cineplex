@@ -19,6 +19,7 @@ import (
 	http2 "cineplex/pkg/http"
 	"cineplex/pkg/logger"
 	"cineplex/pkg/otel"
+
 	"go.uber.org/zap"
 )
 
@@ -114,7 +115,7 @@ func main() {
 
 	lg.Info("scrape interval in seconds", zap.Int("interval", interval))
 
-	ticker := time.NewTicker(time.Second * time.Duration(interval))
+	ticker := time.NewTicker(time.Minute * time.Duration(interval))
 
 	go func() {
 		<-ctx.Done()

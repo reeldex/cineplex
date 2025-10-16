@@ -26,14 +26,14 @@ spec:
     spec:
       containers:                 # List of containers in each pod (usually just 1)
         - name: cineplex          # Name of the container (for identification)
-          image: slash3b/cineplex:v1.1.5  # Your Docker image from Docker Hub
+          image: slash3b/cineplex:v1.1.6  # Your Docker image from Docker Hub
           env:
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "otel-collector-opentelemetry-collector.monitoring.svc.cluster.local:4318" # <service_name><namespace>.svc.cluster.local:4318
             - name: OTEL_SERVICE_NAME
               value: "cineplex"
             - name: OTEL_RESOURCE_ATTRIBUTES
-              value: "service.name=cineplex,service.version=1.1.5"
+              value: "service.name=cineplex,service.version=1.1.6"
             - name: SCRAPE_INTERVAL
               value: "120"
           ports:
