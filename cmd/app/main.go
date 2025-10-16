@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"sync"
 	"syscall"
 	"time"
@@ -104,7 +105,17 @@ func main() {
 
 	senderservice := sender.New(dec, lg)
 
-	ticker := time.NewTicker(time.Minute * 60)
+	const SCRAPE_INTERVAL = "SCRAPE_INTERVAL"
+
+	interval, err := strconv.Atoi(env.Get(SCRAPE_INTERVAL, "120"))
+	if err != nil {
+		lg.Warn("unable to parse scrape interval value", zap.Error(err))
+		interval = 120
+	}
+
+	lg.Info("scrape interval in seconds", zap.Int("interval", interval))
+
+	ticker := time.NewTicker(time.Second * time.Duration(interval))
 
 	go func() {
 		<-ctx.Done()

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"cineplex/pkg/telemetry"
-
 	"github.com/slash3b/cache"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -71,10 +70,16 @@ func (s *CineplexApi) GetMovies(ctx context.Context) (CineplexMoviesResponse, er
 	var res *http.Response
 
 	for r := range retryCount {
+		ctx, span2 := tracer.Start(ctx, "call_time_to_cineplex")
+
 		res, err = s.client.Do(req)
 		if err == nil {
+			span2.End()
+
 			break
 		}
+
+		span2.End()
 
 		if err != nil {
 			select {
