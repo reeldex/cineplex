@@ -4,8 +4,3 @@ kind: Kustomization
 resources:                     # List of Kubernetes manifest files to include
   - deployment.yaml
   - service.yaml
-
-labels:
-  - pairs:
-      app: cineplex
-      version: v1.1.3
