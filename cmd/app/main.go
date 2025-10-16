@@ -19,7 +19,6 @@ import (
 	http2 "cineplex/pkg/http"
 	"cineplex/pkg/logger"
 	"cineplex/pkg/otel"
-
 	"go.uber.org/zap"
 )
 

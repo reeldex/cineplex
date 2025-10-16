@@ -17,7 +17,7 @@ func newTracerProvider(ctx context.Context, res *resource.Resource) (*trace.Trac
 	//}
 
 	// OTLP exporter to send traces to collector
-	//otlpExporter, err := otlptracehttp.New(context.Background())
+	// otlpExporter, err := otlptracehttp.New(context.Background())
 	traceExporter, err := otlptracehttp.New(ctx,
 		otlptracehttp.WithEndpoint(collectorEndpoint),
 		otlptracehttp.WithInsecure(), // Use HTTP instead of HTTPS
