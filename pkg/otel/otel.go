@@ -40,40 +40,43 @@ func SetupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 	prop := newPropagator()
 	otel.SetTextMapPropagator(prop)
 
-	// Set up trace provider.
-	tracerProvider, err := newTracerProvider()
+	// Set up resource (common for all providers)
+	res, err := newResource(ctx)
 	if err != nil {
 		handleErr(err)
+		return shutdown, err
+	}
 
+	// 1. Set up trace provider.
+	tracerProvider, err := newTracerProvider(ctx, res)
+	if err != nil {
+		handleErr(err)
 		return shutdown, err
 	}
 
 	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
 	otel.SetTracerProvider(tracerProvider)
 
-	// Set up meter provider.
-	// see here
-	meterProvider, err := newMeterProvider()
+	// 2. Set up meter provider.
+	meterProvider, err := newMeterProvider(ctx, res)
 	if err != nil {
 		handleErr(err)
-
 		return shutdown, err
 	}
 
 	shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
 	otel.SetMeterProvider(meterProvider)
 
-	// Set up logger provider.
-	loggerProvider, err := newLoggerProvider()
-	if err != nil {
-		handleErr(err)
-
-		return shutdown, err
-	}
-
-	shutdownFuncs = append(shutdownFuncs, loggerProvider.Shutdown)
-	global.SetLoggerProvider(loggerProvider)
-
+	// 3. Set up logger provider.
+	//loggerProvider, err := newLoggerProvider(ctx, res)
+	//if err != nil {
+	//	handleErr(err)
+	//	return shutdown, err
+	//}
+	//
+	//shutdownFuncs = append(shutdownFuncs, loggerProvider.Shutdown)
+	//global.SetLoggerProvider(loggerProvider)
+	//
 	return shutdown, err
 }
 
@@ -84,15 +87,11 @@ func newPropagator() propagation.TextMapPropagator {
 	)
 }
 
-func newLoggerProvider() (*log.LoggerProvider, error) {
-	logExporter, err := stdoutlog.New()
-	if err != nil {
-		return nil, err
-	}
-
-	loggerProvider := log.NewLoggerProvider(
-		log.WithProcessor(log.NewBatchProcessor(logExporter)),
+func newResource(ctx context.Context) (*resource.Resource, error) {
+	return resource.New(ctx,
+		resource.WithAttributes(
+			semconv.ServiceName(serviceName),
+			semconv.ServiceVersion(serviceVersion),
+		),
 	)
-
-	return loggerProvider, nil
 }
