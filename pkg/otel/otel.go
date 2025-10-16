@@ -5,10 +5,16 @@ import (
 	"errors"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
-	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/log"
+	"go.opentelemetry.io/otel/sdk/resource"
+	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
+)
+
+const (
+	serviceName    = "cineplex"
+	serviceVersion = "0.1.0"
+	// Collector endpoint - no http:// prefix!
+	collectorEndpoint = "otel-collector-opentelemetry-collector.monitoring.svc.cluster.local:4318"
 )
 
 // SetupOTelSDK bootstraps the OpenTelemetry pipeline.
