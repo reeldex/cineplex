@@ -15,7 +15,7 @@ metadata:
   labels:                         # Labels attached to the Deployment itself
     app: cineplex                 # Helps organize and filter Deployments, These labels are on the Deployment, not the pods!
 spec:
-  replicas: 2                     # HOW MANY identical copies of your app to run
+  replicas: 1                     # HOW MANY identical copies of your app to run
   selector:                       # How the Deployment identifies "its" pods
     matchLabels:                  # Pods must have ALL these labels to belong here
       app: cineplex               # The Deployment manages pods with this label, MUST MATCH the labels in template.metadata.labels below!
